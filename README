@@ -1,0 +1,150 @@
+---------------------------- 12.01.2024 | Yao ----------------------------
+                    請把結果整理成PPT，做到哪整理到哪
+   不一定只放結果的圖，可以把自己的理解做成簡單的示意圖，或讀的文獻截圖
+                       有讀不同文獻的話記得正確引用
+--------------------------------------------------------------------------
+
+這個資料夾主要是透過 Bernevig-Hughes-Zhang (BHZ) model
+練習三維拓樸絕緣體(3D topological insulator, TI)
+
+尋找這些拓樸相都是在真實材料中找，通常真實材料的band很多、描述起來很複雜
+所以B. Andrei Bernevig, Taylor L. Hughes, Shou-cheng Zhang 這三個人
+寫下BHZ model，嘗試用簡單的effective tight-binding model (TBM)，用來描述3DTI
+讓科學家更簡單明瞭的瞭解3DTI的拓樸相以及物理性質
+
+(因為這種effective TBM可以用簡單4*4的Hamiltonian描述複雜的拓樸相，又稱toy model)
+
+(什麼是TB Hamiltonian可以自己查資料或問group成員
+TightBindingPrimer.pdf 這個檔案是我認為不錯的入門資料)
+
+--------------------------------------------------------------------------
+
+資料夾內附上三篇reference
+1. 3DTI的例子
+2. eq.2 描述BHZ model的方程式(TI3D.m 這個程式就是根據eq.2寫的) 
+3. TI的review (可以自己再找其他參考資料)
+
+--------------------------------------------------------------------------
+
+第一步是產生BHZ model的TB Hamiltonian
+描述BHZ model的程式寫在 3DTI.m
+
+A1,A2,B1,B2,C,D1,D2,M 對應 Ref.2 - eq.2 的參數
+
+我們用來描述TB Hamiltinian的資料格式，被稱為ftn58 (ftn58.mat)
+從第2列開始，第1行~第7行依序為：i,j,tt,dd(1:3)
+i,j為單位晶格內軌域的index；tt為hopping strength；dd為跳多少個單位晶格
+(這部分直接問group成員比較快)
+
+寫下ftn58.mat後，63行會直接跑"TBHmftn.m"這個檔案，把ftn58.mat轉成ftn58sparse.mat
+因為ftn58內沒有晶格向量、長度...等資訊，這個檔案是把晶格資訊...等也寫進來用的
+
+Ainfo為單位晶格內的原子位置與軌域資訊
+abc為lattice vector：a1,a2,a3的長度；BR為a1,a2,a3的單位向量
+Nat為原子數目，isSO為是否考慮spin up + down
+norb為總軌域數目，Orbitps為軌域的資訊(按照軌域排列，也考慮不同spin的軌域)
+ij即為上面提到的i,j；tt、dd亦然
+
+--------------------------------------------------------------------------
+
+TI3D.m的64行會抓band_ftn.m這個檔案畫能帶結構
+
+band_ftn.m的第26~29行為指定momentum space的座標
+單位是reciprocal lattice vector (b1,b2,b3) (0.5代表pi，即為方形Brillouin zone (BZ)的邊界)
+可以自己加上p3,p4...，再在29行的kpoints加上";p3(1:nk,:),p4(1:nk,:)..."
+就可以在同一張圖畫其他BZ中的路徑
+
+--------------------------------------------------------------------------
+
+### 第一步：先試著調整TI3D.m 裡面的參數，看band的變化 ###
+
+嘗試從ref.2, eq.2的方程式那些sin, cos...瞭解這些參數怎麼改變band
+
+提示：
+1. 請注意band_ftn.m裡面走的路徑
+2. M這個參數對於調出3DTI的phase至關重要，注意正負號
+3. 可以把其中幾個參數設成0，找到"2D" TI的相
+
+--------------------------------------------------------------------------
+
+### 第二步：由Wilson's Loop判斷拓樸相 ###
+
+任何的拓樸態皆由對應的拓樸數(topological invariant)描述
+用來描述3DTI的拓樸數為Z2，三維有strong and weak index
+透過 time-reversal invariant momentum (TRIM) 上的 parity eigenvalue 定義
+可以在Ref. 3的 II-C 找到說明 (鼓勵自己另外找資料)
+
+WL這個資料夾為透過Wilson's Loop，判斷系統是否為TI (程式：WL.m)
+wilsonloop_Z2.pdf為Wilson's Loop的理論基礎
+
+提示：拓樸材料的來源為Berry phase
+而Wilson's Loop本質上就是在算Berry phase (or Berry connection)
+(請自己思考找答案，建議參考David Vanderbilt 所著的 "Berry Phase in Electronic Structure Theory")
+
+
+WL.m 第6,7行為kx,ky的切點數；kz為要算哪些kz平面的WL，kz座標在26行(0,pi)
+請思考為何要算kz=0和pi兩個平面，以及如何計算strong index and weak index
+(請搜尋strong TI and weak TI)
+
+(如果要從算不同kz平面改成kx or ky平面，WL.m不用改，直接用BPhase3D.m的6~8行就好
+該行後面有註解)
+
+
+--------------------------------------------------------------------------
+
+### 第三步：計算surface state ###
+
+--- 方法一：semi-infinite Green's function (Green_Ek_speed) ---
+
+這個是透過Green's function迭代Hamiltonian，計算單一個表面的band
+
+主程式為greenfun_unfold_mem.m；算出ek.mat後，用plot_SS.m畫圖
+
+指定BZ路徑的邏輯跟畫band相同(23~26行)
+Ni為迭代次數；w為要看的能量範圍；nn是能量的broadening
+
+用surface調整要看哪個表面(或邊界)
+hop_d調整是上表面，還是下表面
+
+--- 方法二：增加unitcell大小後，切成Slab (super_slab) ---
+
+
+(1)用1-super疊出夠厚的unitcell
+
+input.txt是input
+例如vec1 = [1 0 0]，就是a1方向維持重複1次
+vec1 = [0 0 30]，代表a3方向重複30次
+file讀入前面TI3D.m 產生出的ftn58sparse.mat
+
+先跑SuperCell.m；再跑SuperTBHmftn.m，產生super_ftn58sparse.mat
+
+(1)用2-slab切slab cell
+
+b2s_input.txt為input
+因為前面疊過supercell，nL維持1就好
+isCut決定是否要切非整數倍的slab cell，例如isCut=1的話
+LB = [0 0.95]就會把supercell大於0.95的部分切掉，最頂端為1 (所以 [0 1]等於正常切)
+hkl決定切的方向 [0 0 1]為切掉a3方向
+ref讀入上一步supercell產生出的super_ftn58sparse.mat
+
+先跑SlabCell.m
+27行：xyz_dir = 3為切a3方向
+
+再跑STBHmftn.m
+52行若為orbitps(1:end,6)-component(3)，即為切a3方向
+orbitps(1:end,4)-component(1)為切a1方向
+orbitps(1:end,5)-component(2)為切a1方向
+
+產生Sftn58sparse.mat
+可以檢查要切掉的方向，是否dd(:,那個方向) = 0
+
+--------------------------------------------------------------------------
+
+最後我放了一個example_3DTI_phase.pptx
+裡面有strong TI 和 Weak TI 的phase
+可以拿來對答案
+
+band的形狀可以不一樣，但用WL和surface state的行為必須一樣
+(請學會怎麼判斷，而非照抄答案)
+
+

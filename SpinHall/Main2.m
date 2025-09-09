@@ -1,5 +1,5 @@
 %% ===== sweep_Nk_shifted.m =====
-clear; clc;
+clear;
 load ../ftn58sparse.mat
 
 % 固定參數
@@ -9,7 +9,8 @@ base.eta   = 1e-4;
 base.electronic_charge = 1.0;
 base.hbar  = 1.0;
 
-Nk_list = [41 61];
+
+Nk_list = [41 61 81 101 131 151 181];
 
 % 建議的 5 個位移（單位：格點），效果好且成本低
 shifts = [

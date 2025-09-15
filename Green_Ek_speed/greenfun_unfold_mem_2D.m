@@ -5,7 +5,7 @@ clear; clc;
 load ../ftn58sparse.mat
 
 % ---------- User controls ----------
-EF      = 0.0;        % Fermi level (eV)
+EF      = 0.050;        % Fermi level (eV)
 nn      = 1e-4;       % broadening (eV)
 wsoc    = 1;          % 1 with SOC, 0 without
 surface = 3;          % stacking (cleavage) axis: x=1, y=2, z=3
@@ -13,11 +13,11 @@ hop_d   = 1;          % surface side: bottom=+1, top=-1
 Ni      = 10;          % decimation depth (2^Ni layers)
 
 % 2D k-mesh (fractional along reciprocal primitive axes)
-Nkx = 201; 
-Nky = 201;
+Nkx = 1001; 
+Nky = 1001;
 kr1 = [-0.5, 0.5];    % range along the first FREE axis (in 2π units)
 kr2 = [-0.5, 0.5];    % range along the second FREE axis (in 2π units)
-kfix_frac = 0.03;     % fixed fraction along the STACKING axis
+kfix_frac = 0.00;     % fixed fraction along the STACKING axis
 
 % what to plot: {'As','Asx','Asy','Asz','As_part','Ab'}
 target = 'As';
@@ -99,7 +99,7 @@ E = (EF + 1i*nn) * II;
 
 % ---------- Parallel over k ----------
 % 若需要平行，解除以下註解
-% c = gcp('nocreate'); if isempty(c), parpool('local'); end
+c = gcp('nocreate'); if isempty(c), parpool('local'); end
 
 parfor ik = 1:Ntot
     % k-dependent Hamiltonians (IMPORTANT: pass R)
@@ -196,8 +196,8 @@ xlabel(sprintf('$k_{%s}$ (fraction of $2\\pi$)', axes_lbl_xyz{free(1)}), 'Interp
 ylabel(sprintf('$k_{%s}$ (fraction of $2\\pi$)', axes_lbl_xyz{free(2)}), 'Interpreter','latex');
 
 % 標題（只放 EF 與固定軸）
-title(sprintf('$E=E_F=%.3f\\,\\mathrm{eV}$;  fixed $k_{%s}=%.3f$', ...
-      EF, axes_lbl_xyz{surface}, kfix_frac), 'Interpreter','latex');
+title(sprintf('$E=%.3f\\,\\mathrm{eV}$', ...
+      EF), 'Interpreter','latex');
 
 % 刻度 & 風格（比照 ek.mat）
 ax = gca;

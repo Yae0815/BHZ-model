@@ -19,15 +19,15 @@ load ../ftn58sparse.mat
 % ftn58sparse = SPftn58sparse;
 lat = ftn58sparse.BR.*ftn58sparse.abc;
 rec = inv(lat)';
-kz0 = 0.03;
+kz0 = 0.00;
 %---kpath---%
 nk = 500;
-p1 = [linspace(-0.5,0.0,nk)' linspace(0.1222,0.1222,nk)' linspace(kz0,kz0,nk)'];
-p2 = [linspace(0.0,0.5,nk)' linspace(0.1222,0.1222,nk)' linspace(kz0,kz0,nk)'];
+p1 = [linspace(-0.2,0.0,nk)' linspace(0.3182,0.3182,nk)' linspace(kz0,kz0,nk)'];
+p2 = [linspace(0.0,-0.2,nk)' linspace(0.3182,0.3182,nk)' linspace(kz0,kz0,nk)'];
 
 kpts = [p1(1:nk,:);p2(1:nk,:)]*2*pi;
 
-
+c = gcp('nocreate'); if isempty(c), parpool('local'); end
 %%
 tic; % start clock
 ticBytes(gcp);

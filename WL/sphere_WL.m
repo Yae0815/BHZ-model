@@ -10,9 +10,10 @@ ind.tt    = ftn58sparse.tt;
 ind.dd    = ftn58sparse.dd;
 
 % sphere center & radius (把小球中心放在疑似 Weyl 點附近)
-k0 = [-0.0456*2*pi, 0.1222*2*pi, 0];           % 你可以換成找到的 Weyl 位置
+k0 = [-0.1152*2*pi, 0.3182*2*pi, 0];           % 你可以換成找到的 Weyl 位置
+
 %k0 = [0, 0, 0];
-Rk = 0.05*pi;             % 半徑要小到只包一顆 Weyl，且遠離其他簡并
+Rk = 0.1*pi;             % 半徑要小到只包一顆 Weyl，且遠離其他簡并
 Ntheta = 300; Nphi = 300;
 theta = linspace(1e-3, pi-1e-3, Ntheta);   % 避免極點
 phi   = linspace(0, 2*pi, Nphi+1); phi(end)=[];  % 週期

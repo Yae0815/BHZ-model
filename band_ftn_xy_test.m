@@ -35,9 +35,9 @@ Sz   = [1 0;0 -1];
 
 % 2D 模式的 kpoints 網格設定
 fprintf('進入 2D 模式，開始生成 kpoints 網格...\n');
-N1 = 501; N2 = 501;                 % 解析度
-kx_span = linspace(-0.2, 0.2, N1);% 掃描範圍（約化座標）
-ky_span = linspace(-0.2, 0.2, N2);% 掃描範圍（約化座標）
+N1 = 1001; N2 = 1001;                 % 解析度
+kx_span = linspace(-0.5, 0.5, N1);% 掃描範圍（約化座標）
+ky_span = linspace(-0.5, 0.5, N2);% 掃描範圍（約化座標）
 [KX, KY] = ndgrid(kx_span, ky_span);
 
 tic % 計時開始：生成 kpoints

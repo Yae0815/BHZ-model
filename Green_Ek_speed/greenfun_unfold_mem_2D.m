@@ -5,7 +5,7 @@ clear; clc;
 load ../ftn58sparse.mat
 
 % ---------- User controls ----------
-EF      = 0.050;        % Fermi level (eV)
+EF      = 0.00;        % Fermi level (eV)
 nn      = 1e-4;       % broadening (eV)
 wsoc    = 1;          % 1 with SOC, 0 without
 surface = 3;          % stacking (cleavage) axis: x=1, y=2, z=3

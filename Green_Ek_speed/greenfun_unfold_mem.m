@@ -22,8 +22,8 @@ rec = inv(lat)';
 kz0 = 0.00;
 %---kpath---%
 nk = 500;
-p1 = [linspace(-0.2,0.0,nk)' linspace(0.3182,0.3182,nk)' linspace(kz0,kz0,nk)'];
-p2 = [linspace(0.0,-0.2,nk)' linspace(0.3182,0.3182,nk)' linspace(kz0,kz0,nk)'];
+p1 = [linspace(-0.2,0.0,nk)' linspace(-0.3182,-0.3182,nk)' linspace(kz0,kz0,nk)'];
+p2 = [linspace(0.0,-0.2,nk)' linspace(-0.3182,-0.3182,nk)' linspace(kz0,kz0,nk)'];
 
 kpts = [p1(1:nk,:);p2(1:nk,:)]*2*pi;
 

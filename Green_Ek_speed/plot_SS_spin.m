@@ -1,7 +1,7 @@
 clear all;
 load ek.mat
 %load band.mat
-comp = 'z';
+comp = 'y';
 E_range = [-0.3 0.3];
  wef=w-EF;
  %%
@@ -29,7 +29,7 @@ ylim([-0.3 0.3]);
 list    = [1 501 1000];
 % plot(1:nks,Ek-EF,'k-','LineWidth',1);
 ylabel('\bf{Energy (eV)}','FontSize',24,'interpreter','LaTex');
-cb.Label.String = sprintf('Spin Spectral Function $A_{b,%c}/\\pi$ [1/eV]', comp);
+cb.Label.String = sprintf('Spin Spectral Function $A_{s,%c}/\\pi$ [1/eV]', comp);
 cb.Label.Interpreter = 'latex';
 ax = gca;
 ax.TickDir    = 'in';

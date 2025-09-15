@@ -147,18 +147,71 @@ end
 
 Map = reshape(val, size(k1g)) / pi;   % (1/pi) normalization as usual
 
-% ---------- Plot ----------
-figure;
-imagesc(linspace(kr1(1),kr1(2),Nkx), linspace(kr2(1),kr2(2),Nky), Map);
+%% ---------- Plot (pcolor + shading interp, viridis, LaTeX labels) ----------
+% 參數：你可以改這兩個來控制外觀
+cax = [0 10];           % 顏色範圍 caxis，依資料調整
+tick_step = 0.25;       % k 軸刻度間距（以 2π 分數單位）
+
+% 1) 用 pcolor + shading interp 畫（跟 ek.mat 風格一致）
+figure('Color','w');
+hold on;
+% pcolor 需要格點；我們直接用中心格點即可（會少掉最後一行／列是正常現象）
+hp = pcolor(k1g, k2g, Map);
+set(hp,'EdgeColor','none');    % 等效 shading interp 的平滑感
+shading interp;
+
+% colormap / 色條
+try
+    colormap(viridis);  % 你資料夾有 viridis.m 就會用到它
+catch
+    colormap(parula);
+end
+cb = colorbar;
+% 針對不同 target 給漂亮一點的標籤
+switch lower(target)
+    case 'as',      cb.Label.String = '$A_s/\pi$ [1/eV]';
+    case 'asx',     cb.Label.String = '$A_{s,x}/\pi$ [1/eV]';
+    case 'asy',     cb.Label.String = '$A_{s,y}/\pi$ [1/eV]';
+    case 'asz',     cb.Label.String = '$A_{s,z}/\pi$ [1/eV]';
+    case 'as_part', cb.Label.String = '$A_{s}^{(\mathrm{top})}/\pi$ [1/eV]';
+    case 'ab',      cb.Label.String = '$A_b/\pi$ [1/eV]';
+    otherwise,      cb.Label.String = sprintf('%s / \\pi  [1/eV]', upper(target));
+end
+cb.Label.Interpreter = 'latex';
+cb.TickDirection = 'out';
+cb.FontSize = 14;
+
+% 座標與比例
 axis image; axis xy;
-axes_lbl = {'b_1','b_2','b_3'};
-xlabel(sprintf('k along %s (2\\pi units)', axes_lbl{free(1)}), 'Interpreter','tex');
-ylabel(sprintf('k along %s (2\\pi units)', axes_lbl{free(2)}), 'Interpreter','tex');
-title(sprintf('E=EF=%.3f eV)', EF));
-cb = colorbar; 
-cb.Label.String = sprintf('%s / \\pi  [1/eV]', upper(target));
-set(gca,'FontSize',14,'LineWidth',1,'TickDir','out');
-colormap(parula);     % 如需固定顏色範圍：e.g., caxis([0, 10]);
+xlim(kr1); ylim(kr2);
+caxis(cax);
+
+% 2) 讓軸標顯示你想要的「x / y / z」
+%    free = setdiff(1:3, surface) 已在主程式前面算好了
+axes_lbl_xyz = {'x','y','z'};    % 想用 b_1/b_2/b_3 的話換下一行
+% axes_lbl_b   = {'b_1','b_2','b_3'};
+
+% 用 LaTeX interpreter 才能正常顯示下標 k_x, k_y
+xlabel(sprintf('$k_{%s}$ (fraction of $2\\pi$)', axes_lbl_xyz{free(1)}), 'Interpreter','latex');
+ylabel(sprintf('$k_{%s}$ (fraction of $2\\pi$)', axes_lbl_xyz{free(2)}), 'Interpreter','latex');
+
+% 標題（只放 EF 與固定軸）
+title(sprintf('$E=E_F=%.3f\\,\\mathrm{eV}$;  fixed $k_{%s}=%.3f$', ...
+      EF, axes_lbl_xyz{surface}, kfix_frac), 'Interpreter','latex');
+
+% 刻度 & 風格（比照 ek.mat）
+ax = gca;
+ax.TickDir    = 'in';
+ax.FontSize   = 18;
+ax.FontWeight = 'bold';
+ax.TickLength = [0.02 0.02];
+ax.TickLabelInterpreter = 'latex';
+
+% 設定等距刻度
+xticks(kr1(1):tick_step:kr1(2));
+yticks(kr2(1):tick_step:kr2(2));
+box on;
+hold off;
 
 % ---------- Save ----------
 save cec_EF_2D.mat EF surface hop_d kfix_frac free kr1 kr2 Nkx Nky ...

@@ -66,8 +66,8 @@ function cache = precompute_kgrid(params)
         vA_e = U'*(vA *U); vB_e = U'*(vB *U);
 
         % precompute X and denominator
-        Xab(:,:,t) = 2*imag( JA .* (vB_e.').' );
-        Xba(:,:,t) = 2*imag( JB .* (vA_e.').' );
+        Xab(:,:,t) = 2*imag( JA .* (vB_e.') );
+        Xba(:,:,t) = 2*imag( JB .* (vA_e.') );
 
         dE = E(:)'-E(:);                       % 4x4
         den = dE.^2 + eta^2;
